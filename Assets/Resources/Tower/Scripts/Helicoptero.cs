@@ -17,8 +17,7 @@ public class Helicoptero : MonoBehaviour {
     void Start () {
 
         helicopteroRigidBody = GetComponent<Rigidbody>();
-
-        //posicionLanzamiento = GameObject.Find("GestorPartida").GetComponent<GestorPartida>().getLanzamiento();
+        posicionLanzamiento = GameObject.Find("Ground Plane Stage/Torre/GestorPartida(Clone)").transform;
     }
 	
 	void Update () {

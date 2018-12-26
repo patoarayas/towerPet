@@ -23,27 +23,27 @@ public class nuevoBloque : MonoBehaviour
 
     private Vector3 aux, pos = Vector3.zero;
 
-    private Transform heliCuerpo;
+    private Transform helicoptero;
 
     void Start()
     {
         // Busca al Gestor Partida
-        gestorPartida = GameObject.Find("GestorPartida").GetComponent<GestorPartida>();
-        //Obtiene el radio maximo 
+        gestorPartida = GameObject.Find("Ground Plane Stage/Torre/GestorPartida(Clone)").GetComponent<GestorPartida>();
+        // Obtenemos la posicion del helicoptero
+        helicoptero = GameObject.Find("Ground Plane Stage/Torre/Helicoptero(Clone)/Body").transform;
+        //Obtiene el radio maximo
         radioMaximo = gestorPartida.getRadioMaximo();
 
         //SEtea el cubo para que no le agecte la greavedad no las colisiones
         GetComponent<Rigidbody>().isKinematic = true;
         GetComponent<Rigidbody>().useGravity = false;
 
-        //Obtiene la posicion del helicoptero
-        heliCuerpo = GameObject.Find("Helicoptero/Body").GetComponent<Transform>();
         //Pone esta posicion en la variable pos
-        pos.y = heliCuerpo.transform.position.y;
+        pos.y = helicoptero.transform.position.y;
 
         // SEtea la escala del bloque a 0
         transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // el bloque parte con una escala de 0, es decir no existe
-        //GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
+        GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
 
     }
 
@@ -53,7 +53,7 @@ public class nuevoBloque : MonoBehaviour
 
         tiempo += Time.deltaTime * 0.5f;
 
-        Debug.DrawLine(heliCuerpo.position, transform.position, Color.white, 0.0001f);
+        Debug.DrawLine(helicoptero.position, transform.position, Color.white, 0.0001f);
 
         // Escala el bloque mientras no este listo
         if (!bloqueListo)
@@ -66,12 +66,12 @@ public class nuevoBloque : MonoBehaviour
 
 
         // Escalado del bloque al ser instanciado
-        if (transform.localScale.y >= 0.05f && !bloqueListo)
+        if (transform.localScale.y >= 0.025f && !bloqueListo)
         {
-            transform.localScale = new Vector3(0.2f, 0.05f, 0.2f);
+            Debug.Log("setListo en nuevo bloque.");
+            transform.localScale = new Vector3(0.1f, 0.025f, 0.1f);
             gestorPartida.setListo();
             bloqueListo = true;
-
         }
 
 
@@ -89,7 +89,7 @@ public class nuevoBloque : MonoBehaviour
         //Debug.Log("pos Z: "+ posZ);
         pos.y = -posY - radioMaximo;
 
-        transform.position = pos + heliCuerpo.position;
+        transform.position = pos + helicoptero.position;
 
         anguloX = decremento * Mathf.Abs(Mathf.Atan(posX / posY) * Mathf.Rad2Deg);
         anguloZ = decremento * Mathf.Abs(Mathf.Atan(posZ / posY) * Mathf.Rad2Deg);

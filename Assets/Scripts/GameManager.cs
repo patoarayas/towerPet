@@ -20,8 +20,8 @@ public class GameManager : MonoBehaviour {
     //Permite acceder y controlar el canvas de la mascota, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject mascotaCanvas;
-    //Permite acceder y controlar la torre
-    public GameObject torre;
+    // corresponde al gameObject de la torre, contiene el plano,gestorpartida y helicoptero
+    public GameObject instanciaTorre;
     //Permite acceder y controlar el canvas de la torre, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject torreCanvas;
@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
     private void Awake()
     {
         //Se desactivan los elementos del juego
-        torre.SetActive(false);
+        //torre.SetActive(false);
         torreCanvas.SetActive(false);
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
@@ -72,15 +72,20 @@ public class GameManager : MonoBehaviour {
 
     public void iniciarTorre()
     {
+        //Pausamos la mascota y su canvas(se esconden)
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
-        torre.SetActive(true);
+
+        // Creamos una NUEVA torre con los prefab
+        Instantiate(Resources.Load("Prefabs/Gestorpartida", typeof(GameObject)), new Vector3(0, 0.5f, 0), Quaternion.identity, instanciaTorre.transform);
+
+        // activamos el canvas de la torre
         torreCanvas.SetActive(true);
     }
 
     public void iniciarMascota()
     {
-        torre.SetActive(false);
+        //torre.SetActive(false);
         torreCanvas.SetActive(false);
         mascota.SetActive(true);
         mascotaCanvas.SetActive(true);

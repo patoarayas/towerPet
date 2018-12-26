@@ -12,7 +12,7 @@ public class GestorPartida : MonoBehaviour {
 
    //private Helicoptero helicoptero;
 
-    public GameObject cuboPrefab;
+    private GameObject cuboPrefab;
 
     //Bloque actualmente colgado del helicoptero
     private GameObject nuevoBloque;
@@ -32,7 +32,7 @@ public class GestorPartida : MonoBehaviour {
     private float promX, promZ;
 
     //Arreglo de bloques
-    LinkedList<GameObject> arrayBloques = new LinkedList<GameObject>();
+    private  LinkedList<GameObject> arrayBloques = new LinkedList<GameObject>();
 
     // Arreglo de materiales para los bloques
     //private Material[] arrayMaterial = new Material[7];
@@ -41,20 +41,16 @@ public class GestorPartida : MonoBehaviour {
 
     private void Start()
     {
-        /*
-        for (int i = 0; i < 7; i++)
-        {
-            arrayMaterial[i] = Resources.Load("/Resources/Tower/Textures/m_" + 2) as Material;
-        }
-        */
+        posicionLanzamiento =  GetComponent<Transform>();
+        // Cargamos el cubo
+        cuboPrefab = Resources.Load("Tower/Cube") as GameObject;
+        //Instanciamos el helicoptero en una posicion y lo ponemos como hijo de la torre.
+        Instantiate(Resources.Load("Prefabs/Helicoptero", typeof(GameObject)), new Vector3(0, 1f, 0), Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
 
-        posicionLanzamiento = GetComponent<Transform>();
-       
-        //cuboPrefab.GetComponent<MeshRenderer>().material = arrayMaterial[Random.Range(0, 5)];
-
+        //Obtenemos el boton: "Soltar bloque" y le agregamos el metodo, solo de esta manera funciona
+        GameObject.Find("Canvas/Torre/soltarBloque_Boton").GetComponent<Button>().onClick.AddListener(this.lanzarBloque);
         //Se instancia el primer bloque 
-        nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity) as GameObject;
-        nuevoBloque.transform.SetParent(posicionLanzamiento);
+        nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
     }
 
 
@@ -91,10 +87,10 @@ public class GestorPartida : MonoBehaviour {
 
     public void lanzarBloque()
     {
-        Debug.Log("Lanzando Bloque");
-
+        Debug.Log("Boton: gestor partida");
         if (_bloqueListo)
         {
+            Debug.Log("Lanzado!!");
             //Se desactiva el update del bloque, y se llama a la funcion soltar
             nuevoBloque.GetComponent<nuevoBloque>().enabled = false;
             nuevoBloque.GetComponent<nuevoBloque>().soltarBloque();
@@ -104,11 +100,8 @@ public class GestorPartida : MonoBehaviour {
             _radioMaximo += 0.01f;
             _bloqueListo = false;
 
-            //cuboPrefab.GetComponent<MeshRenderer>().material = arrayMaterial[Random.Range(0, 5)];
-
             //Creamos un nuevo bloque para lanzar
-            nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity) as GameObject;
-            nuevoBloque.transform.SetParent(posicionLanzamiento);
+            nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
         }
 
     }
@@ -120,7 +113,9 @@ public class GestorPartida : MonoBehaviour {
     // Metodos de encapsulamiento
     public void setListo()
     {
+        Debug.Log("setlisto en gestorpartida");
         _bloqueListo = true;
+        Debug.Log(_bloqueListo);
     }
 
     public Transform getLanzamiento()
