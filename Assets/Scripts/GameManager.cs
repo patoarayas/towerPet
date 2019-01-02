@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour {
     public Animator mascotaAnimator;
 
     // Contador global de monedas
+    public InputField nombre_field;
+    public string nombre_usuario;
     public GameObject uIMonedas;
     public Text textoMonedas;    
     public int monedas = 100;
@@ -20,8 +22,10 @@ public class GameManager : MonoBehaviour {
     //Permite acceder y controlar el canvas de la mascota, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject mascotaCanvas;
-    // corresponde al gameObject de la torre, contiene el plano,gestorpartida y helicoptero
-    public GameObject instanciaTorre;
+    // corresponde al gameObject de la torre y todos sus elementos: Torre, helicoptero, textos en 3D, bloques...
+    private GameObject instanciaTorre;
+    public int ultimoScore;
+    public bool terminada;
     //Permite acceder y controlar el canvas de la torre, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject torreCanvas;
@@ -42,15 +46,10 @@ public class GameManager : MonoBehaviour {
 
 
     }
-    // Use this for initialization
-    void Start () {
-		
-        
-	}
 	
 	// Update is called once per frame
 	void Update () {
-
+        
         textoMonedas.text = "Monedas: " + monedas;
         if(monedas == 0)
         {
@@ -61,6 +60,13 @@ public class GameManager : MonoBehaviour {
     }
     public void iniciarJuego()
     {
+        if (nombre_field.GetComponent<InputField>().text.Equals(""))
+        {
+            nombre_field.GetComponent<InputField>().placeholder.color = Color.red;
+            return;
+        }
+        nombre_usuario = nombre_field.GetComponent<InputField>().text;
+
         menu.SetActive(false);
         planeFinder.SetActive(true);
         mascota.SetActive(true);
@@ -75,20 +81,30 @@ public class GameManager : MonoBehaviour {
         //Pausamos la mascota y su canvas(se esconden)
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
-
         // Creamos una NUEVA torre con los prefab
-        Instantiate(Resources.Load("Prefabs/Gestorpartida", typeof(GameObject)), new Vector3(0, 0.5f, 0), Quaternion.identity, instanciaTorre.transform);
+        instanciaTorre = Instantiate(Resources.Load("Prefabs/Torre") as GameObject, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Ground Plane Stage").transform);
+        instanciaTorre.name = "Torre"; // le quitamos el "(Clone)".
 
-        // activamos el canvas de la torre
+        // activamos el canvas de la torre.
         torreCanvas.SetActive(true);
+        GameObject.Find("Canvas/Torre/partida_terminada").SetActive(false);
     }
 
     public void iniciarMascota()
     {
-        //torre.SetActive(false);
+        // Eliminamos la instancia "Torre".
+        GameObject.Find("Canvas/Torre/soltarBloque_Boton").SetActive(true);
+        Destroy(instanciaTorre);
+        // desactivamos y activamos los canvas
         torreCanvas.SetActive(false);
         mascota.SetActive(true);
         mascotaCanvas.SetActive(true);
+
+        if (terminada)
+        {
+            terminada = false;
+            actualizarMarcador();
+        }
     }
 
     public void darComida()
@@ -103,5 +119,11 @@ public class GameManager : MonoBehaviour {
             mascotaAnimator.SetTrigger("No");
             Debug.Log("Sin saldo para comida");
         }
+    }
+
+
+    private void actualizarMarcador()
+    {
+
     }
 }
