@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour {
     public Animator mascotaAnimator;
 
     // Contador global de monedas
-    public InputField nombre_field;
-    public string nombre_usuario;
     public GameObject uIMonedas;
     public Text textoMonedas;    
     public int monedas = 100;
@@ -25,7 +23,7 @@ public class GameManager : MonoBehaviour {
     // corresponde al gameObject de la torre y todos sus elementos: Torre, helicoptero, textos en 3D, bloques...
     private GameObject instanciaTorre;
     public int ultimoScore;
-    public bool terminada;
+    public bool terminada = false;
     //Permite acceder y controlar el canvas de la torre, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject torreCanvas;
@@ -60,13 +58,6 @@ public class GameManager : MonoBehaviour {
     }
     public void iniciarJuego()
     {
-        if (nombre_field.GetComponent<InputField>().text.Equals(""))
-        {
-            nombre_field.GetComponent<InputField>().placeholder.color = Color.red;
-            return;
-        }
-        nombre_usuario = nombre_field.GetComponent<InputField>().text;
-
         menu.SetActive(false);
         planeFinder.SetActive(true);
         mascota.SetActive(true);
@@ -103,7 +94,10 @@ public class GameManager : MonoBehaviour {
         if (terminada)
         {
             terminada = false;
-            actualizarMarcador();
+            if (ultimoScore < 9)
+                monedas += ultimoScore;
+            else
+                monedas += ultimoScore * 10;
         }
     }
 
@@ -121,9 +115,4 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-
-    private void actualizarMarcador()
-    {
-
-    }
 }

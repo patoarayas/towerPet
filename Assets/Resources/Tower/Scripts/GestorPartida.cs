@@ -44,6 +44,7 @@ public class GestorPartida : MonoBehaviour {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         vidas = 3;
         vidas_text = GameObject.Find("Canvas/Torre/marcador_vidas").GetComponent<Text>();
+        vidas_text.text = "Vidas x " + vidas.ToString();
         posicionLanzamiento =  GetComponent<Transform>();
         transform.position = new Vector3(0, 0.275f, 0);
 
