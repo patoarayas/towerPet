@@ -23,9 +23,9 @@ public class GestorPartida : MonoBehaviour {
     private Transform posicionLanzamiento;
 
     //Radio maximo de oscilacion del bloque
-    private float _radioMaximo = 0.2f;
+    private float _radioMaximo;
     //Radio minimo de oscilacion del bloque
-    private float _separacion = 0.075f;
+    private float _separacion;
 
     //Avisa que el bloque esta listo para ser lanzado (Escalar)
     private bool _bloqueListo = false;
@@ -39,48 +39,49 @@ public class GestorPartida : MonoBehaviour {
 
 
 
-    private void Start()
+    private void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        vidas = 3;
         vidas_text = GameObject.Find("Canvas/Torre/marcador_vidas").GetComponent<Text>();
-        vidas_text.text = "Vidas x " + vidas.ToString();
         posicionLanzamiento =  GetComponent<Transform>();
-        transform.position = new Vector3(0, 0.275f, 0);
 
         // Cargamos el cubo
         cuboPrefab = Resources.Load("Tower/Cube") as GameObject;
 
-
-        // Cargamos e instanciamos el plano y lo dejamos como hijo de la torre.
-        Instantiate(Resources.Load("Prefabs/PlanoInvicible") as GameObject, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
-
         //Instanciamos y configuramos el contador de bloques 3D.
-        GameObject aux_contador = Instantiate(Resources.Load("Prefabs/marcador_bloques") as GameObject, new Vector3(-0.31f, 0, -0.372f), Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
-        aux_contador.transform.eulerAngles = new Vector3(0, -45, 0);
-        contador_bloques_3D = aux_contador.GetComponent<SimpleHelvetica>();
+        contador_bloques_3D = GameObject.Find("Ground Plane Stage/Torre/marcador_bloques").GetComponent<SimpleHelvetica>();
 
-        // Instanciamos y configuramos la alerta_helicoptero
-        GameObject aux_alerta = Instantiate(Resources.Load("Prefabs/alerta_helicoptero") as GameObject, new Vector3(-0.31f, 0, -0.372f), Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
-        alerta_helicopter_3D = aux_alerta;
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().Text = "Espere..";
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().GenerateText();
-        alerta_helicopter_3D.GetComponent<MeshRenderer>().material.color = Color.red;
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
-
-
-        // Cargamos e instanciamos el helicoptero en una posicion y lo ponemos como hijo de la torre.
-        GameObject aux_heli = Instantiate(Resources.Load("Prefabs/Helicoptero") as GameObject, new Vector3(0, 1f, 0), Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
-        // Le sacamos el "(Clone)"
-        aux_heli.name = "Helicoptero";
-
+        // Configuramos la alerta_helicoptero
+        alerta_helicopter_3D = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero");
 
         //Obtenemos el boton: "Soltar bloque" y le agregamos el metodo, solo de esta manera funciona
         GameObject.Find("Canvas/Torre/soltarBloque_Boton").GetComponent<Button>().onClick.AddListener(this.lanzarBloque);
 
-        GameObject.Find("Canvas/Torre/record_local/Text").GetComponent<Text>().text = PlayerPrefs.GetInt("valorLocal").ToString();
+    }
+
+    public void iniciarPartida()
+    {
+        vidas = 3;
+        vidas_text.text = "Vidas x " + vidas.ToString();
+        transform.position = new Vector3(0, 0.3f, 0);
+
+        _radioMaximo = 0.2f;
+        _separacion = 0.075f;
+
+
         //Se instancia el primer bloque y se inicia la partida.
         nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
+
+        GameObject.Find("Canvas/Torre/record_local/Text").GetComponent<Text>().text = PlayerPrefs.GetInt("valorLocal").ToString();
+
+        //reiniciamos la Alerta del helicoptero
+        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().Text = "Espere..";
+        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().GenerateText();
+        alerta_helicopter_3D.GetComponent<MeshRenderer>().material.color = Color.red;
+        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
+        // Reiniciamos al contador de bloques
+        contador_bloques_3D.Text = "0";
+        contador_bloques_3D.GenerateText();
 
     }
 

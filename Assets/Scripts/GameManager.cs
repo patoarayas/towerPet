@@ -9,14 +9,16 @@ public class GameManager : MonoBehaviour {
 
     // Contador global de monedas
     public GameObject uIMonedas;
-    public Text textoMonedas;    
-    public int monedas = 100;
+    public Text textoMonedas;
+    public int monedas;
 
     //Permite acceder y controlar el menu (UI), notar que la
     //variable es un GameObject, no el canvas
     public GameObject menu;
     //Permite acceder y controlar la mascota
     public GameObject mascota;
+
+    public GameObject torre;
     //Permite acceder y controlar el canvas de la mascota, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject mascotaCanvas;
@@ -43,7 +45,7 @@ public class GameManager : MonoBehaviour {
 
     private void Awake()
     {
-
+        torre.SetActive(false);
         torreCanvas.SetActive(false);
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
@@ -93,12 +95,10 @@ public class GameManager : MonoBehaviour {
         //Pausamos la mascota y su canvas(se esconden)
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
-        // Creamos una NUEVA torre con los prefab
-        instanciaTorre = Instantiate(Resources.Load("Prefabs/Torre") as GameObject, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Ground Plane Stage").transform);
-        instanciaTorre.name = "Torre"; // le quitamos el "(Clone)".
-
-        // activamos el canvas de la torre.
         torreCanvas.SetActive(true);
+        // Activamos la torre
+        torre.SetActive(true);
+        GameObject.Find("Ground Plane Stage/Torre/GestorPartida").GetComponent<GestorPartida>().iniciarPartida();
         GameObject.Find("Canvas/Torre/partida_terminada").SetActive(false);
     }
 

@@ -17,14 +17,14 @@ public class Helicoptero : MonoBehaviour {
 
     private AudioSource emisor_helicoptero;
 
-    void Start () {
+    void Awake () {
         emisor_helicoptero = GetComponent<AudioSource>();
         emisor_helicoptero.loop = true;
         emisor_helicoptero.Play();
 
         helicopteroRigidBody = GetComponent<Rigidbody>();
         posicionLanzamiento = GameObject.Find("Ground Plane Stage/Torre/GestorPartida").transform;
-        alerta_helicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero(Clone)").transform;
+        alerta_helicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero").transform;
         transform.eulerAngles = new Vector3(0, 180, 0);
     }
 	
