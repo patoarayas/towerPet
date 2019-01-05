@@ -14,11 +14,12 @@ public class Helicoptero : MonoBehaviour {
     private Transform posicionLanzamiento;
     // Tranform del alerta_helicoptero
     private Transform alerta_helicoptero;
-    private 
-    
+
+    private AudioSource emisor_helicoptero;
 
     void Start () {
-
+        emisor_helicoptero = GetComponent<AudioSource>();
+        emisor_helicoptero.PlayOneShot(Resources.Load("Tower/helicopter_hovering"));
         helicopteroRigidBody = GetComponent<Rigidbody>();
         posicionLanzamiento = GameObject.Find("Ground Plane Stage/Torre/GestorPartida").transform;
         alerta_helicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero(Clone)").transform;

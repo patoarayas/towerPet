@@ -23,7 +23,15 @@ public class GameManager : MonoBehaviour {
     // corresponde al gameObject de la torre y todos sus elementos: Torre, helicoptero, textos en 3D, bloques...
     private GameObject instanciaTorre;
     public int ultimoScore;
+    // Si el usuario finalizo la partida correctamente sera true y las monedas se sumaran.
     public bool terminada = false;
+
+    public AudioSource emisor_audio;
+    public AudioClip sonido1;
+    public AudioClip sonido2;
+    public AudioClip sonido3;
+    public AudioClip sonido4;
+
     //Permite acceder y controlar el canvas de la torre, notar que
     //la variable es el GameObject, y no es un Canvas
     public GameObject torreCanvas;
