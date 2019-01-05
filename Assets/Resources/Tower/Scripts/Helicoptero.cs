@@ -19,7 +19,9 @@ public class Helicoptero : MonoBehaviour {
 
     void Start () {
         emisor_helicoptero = GetComponent<AudioSource>();
-        emisor_helicoptero.PlayOneShot(Resources.Load("Tower/helicopter_hovering"));
+        emisor_helicoptero.loop = true;
+        emisor_helicoptero.Play();
+
         helicopteroRigidBody = GetComponent<Rigidbody>();
         posicionLanzamiento = GameObject.Find("Ground Plane Stage/Torre/GestorPartida").transform;
         alerta_helicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero(Clone)").transform;

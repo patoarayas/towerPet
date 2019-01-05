@@ -26,8 +26,11 @@ public class GameManager : MonoBehaviour {
     // Si el usuario finalizo la partida correctamente sera true y las monedas se sumaran.
     public bool terminada = false;
 
+
+    // Emisor de sonidos
     public AudioSource emisor_audio;
-    public AudioClip sonido1;
+    // Audios del sonido mp3
+    public AudioClip sonido_comer;
     public AudioClip sonido2;
     public AudioClip sonido3;
     public AudioClip sonido4;
@@ -40,14 +43,24 @@ public class GameManager : MonoBehaviour {
 
     private void Awake()
     {
-        //Se desactivan los elementos del juego
-        //torre.SetActive(false);
+
         torreCanvas.SetActive(false);
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
         uIMonedas.SetActive(false);
         planeFinder.SetActive(false);
-       
+
+        if (!PlayerPrefs.HasKey("valorMonedas"))
+        {
+            PlayerPrefs.SetInt("valorMonedas", 100);
+            monedas = PlayerPrefs.GetInt("valorMonedas");
+        }
+        else
+        {
+            monedas = PlayerPrefs.GetInt("valorMonedas");
+        }
+ 
+
 
 
 
@@ -99,14 +112,7 @@ public class GameManager : MonoBehaviour {
         mascota.SetActive(true);
         mascotaCanvas.SetActive(true);
 
-        if (terminada)
-        {
-            terminada = false;
-            if (ultimoScore < 9)
-                monedas += ultimoScore;
-            else
-                monedas += ultimoScore * 10;
-        }
+        comprobacionLocalOnline();
     }
 
     public void darComida()
@@ -115,12 +121,39 @@ public class GameManager : MonoBehaviour {
         {
             mascotaAnimator.SetTrigger("Comida");
             monedas -= 10;
+            PlayerPrefs.SetInt("valorMonedas", monedas);
         }
         else
         {
             mascotaAnimator.SetTrigger("No");
             Debug.Log("Sin saldo para comida");
         }
+    }
+
+    private void comprobacionLocalOnline()
+    {
+        if (!terminada)
+            return;
+        terminada = false;
+
+        //Sumamos las monedas
+        if (ultimoScore < 9)
+            monedas += ultimoScore;
+        else
+            monedas += ultimoScore * 10;
+        PlayerPrefs.SetInt("valorMonedas", monedas);
+
+        //Guardamos de manera local
+        if (!PlayerPrefs.HasKey("valorLocal"))
+        {
+            PlayerPrefs.SetInt("valorLocal", ultimoScore);
+        }
+        else
+        {
+            if (PlayerPrefs.GetInt("valoLocal") < ultimoScore)
+                PlayerPrefs.SetInt("valorLocal",ultimoScore);
+        }
+            
     }
 
 }

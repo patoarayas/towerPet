@@ -77,6 +77,8 @@ public class GestorPartida : MonoBehaviour {
 
         //Obtenemos el boton: "Soltar bloque" y le agregamos el metodo, solo de esta manera funciona
         GameObject.Find("Canvas/Torre/soltarBloque_Boton").GetComponent<Button>().onClick.AddListener(this.lanzarBloque);
+
+        GameObject.Find("Canvas/Torre/record_local/Text").GetComponent<Text>().text = PlayerPrefs.GetInt("valorLocal").ToString();
         //Se instancia el primer bloque y se inicia la partida.
         nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
 
@@ -184,14 +186,15 @@ public class GestorPartida : MonoBehaviour {
 
     public void restarVida()
     {
-        if(vidas == 1)
+        if(vidas == 1) // Si perdemos todas las vidas
         {
+            // desactivamos el boton 
             GameObject.Find("Canvas/Torre/soltarBloque_Boton").SetActive(false);
             GameObject.Find("Canvas/Torre/partida_terminada").SetActive(true);
             Text texto = GameObject.Find("Canvas/Torre/partida_terminada/Text").GetComponent<Text>();
             texto.text = "Haz perdido \n puntuacion maxima: \n " + arrayBloques.Count.ToString();
             gameManager.terminada = true;
-            gameManager.ultimoScore = arrayBloques.Count;
+            gameManager.ultimoScore = arrayBloques.Count; // Agregamos el ultimo Score al local
             return;
         }
         vidas -= 1;
