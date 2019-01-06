@@ -23,12 +23,13 @@ public class GameManager : MonoBehaviour {
     //la variable es el GameObject, y no es un Canvas
     public GameObject mascotaCanvas;
     // corresponde al gameObject de la torre y todos sus elementos: Torre, helicoptero, textos en 3D, bloques...
-    private GameObject instanciaTorre;
+
+    // Puntaje de bloques o algo asi supongo
     public int ultimoScore;
     // Si el usuario finalizo la partida correctamente sera true y las monedas se sumaran.
     public bool terminada = false;
 
-
+    // TODO: Falta ver esto
     // Emisor de sonidos
     public AudioSource emisor_audio;
     // Audios del sonido mp3
@@ -45,22 +46,26 @@ public class GameManager : MonoBehaviour {
 
     private void Awake()
     {
+        // Desactiva todo los elementos, dejando solo el menu principal
         torre.SetActive(false);
         torreCanvas.SetActive(false);
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
         uIMonedas.SetActive(false);
         planeFinder.SetActive(false);
+        menu.SetActive(true);
+        
 
+        // TODO: ESto deberia ser su propio metodo,
+        // y deberia cargar tambien el recor de la torre
+        // Carga la partida guardada, si no existe la crea
         if (!PlayerPrefs.HasKey("valorMonedas"))
         {
             PlayerPrefs.SetInt("valorMonedas", 100);
-            monedas = PlayerPrefs.GetInt("valorMonedas");
         }
-        else
-        {
-            monedas = PlayerPrefs.GetInt("valorMonedas");
-        }
+
+        monedas = PlayerPrefs.GetInt("valorMonedas");
+        
  
 
 
@@ -70,7 +75,8 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
+
+        // Muestra la cantidad de monedas en pantalla
         textoMonedas.text = "Monedas: " + monedas;
         if(monedas == 0)
         {
@@ -79,6 +85,7 @@ public class GameManager : MonoBehaviour {
         }
 
     }
+
     public void iniciarJuego()
     {
         menu.SetActive(false);
@@ -98,29 +105,30 @@ public class GameManager : MonoBehaviour {
         torreCanvas.SetActive(true);
         // Activamos la torre
         torre.SetActive(true);
-        GameObject.Find("Ground Plane Stage/Torre/GestorPartida").GetComponent<GestorPartida>().iniciarPartida();
-        GameObject.Find("Canvas/Torre/partida_terminada").SetActive(false);
+        //GameObject.Find("Ground Plane Stage/Torre/GestorPartida").GetComponent<GestorPartida>().iniciarPartida();
+        //GameObject.Find("Canvas/Torre/partida_terminada").SetActive(false);
+        //torre.GetComponentInChildren<GestorPartida>().iniciarPartida();
     }
 
     public void iniciarMascota()
     {
         // Eliminamos la instancia "Torre".
-        GameObject.Find("Canvas/Torre/soltarBloque_Boton").SetActive(true);
-        Destroy(instanciaTorre);
+        //GameObject.Find("Canvas/Torre/soltarBloque_Boton").SetActive(true);
+
         // desactivamos y activamos los canvas
         torreCanvas.SetActive(false);
         mascota.SetActive(true);
         mascotaCanvas.SetActive(true);
 
-        comprobacionLocalOnline();
+        finPartida();
     }
 
-    public void darComida()
+    public void darComida(int precio)
     {
-        if(monedas >= 10)
+        if(monedas >= precio)
         {
             mascotaAnimator.SetTrigger("Comida");
-            monedas -= 10;
+            monedas -= precio;
             PlayerPrefs.SetInt("valorMonedas", monedas);
         }
         else
@@ -130,17 +138,19 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    private void comprobacionLocalOnline()
+    //TODO: Revisar si esto es necesario
+    private void finPartida()
     {
         if (!terminada)
+        {
             return;
+        }
+
         terminada = false;
 
         //Sumamos las monedas
-        if (ultimoScore < 9)
-            monedas += ultimoScore;
-        else
-            monedas += ultimoScore * 10;
+
+        monedas += ultimoScore * 10;
         PlayerPrefs.SetInt("valorMonedas", monedas);
 
         //Guardamos de manera local
@@ -154,6 +164,11 @@ public class GameManager : MonoBehaviour {
                 PlayerPrefs.SetInt("valorLocal",ultimoScore);
         }
             
+    }
+
+    public void setPlaneFinder(bool set)
+    {
+        planeFinder.SetActive(set);
     }
 
 }

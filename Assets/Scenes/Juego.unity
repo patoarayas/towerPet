@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.5748171, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1616,8 +1616,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 148773785}
-  m_LocalRotation: {x: -0.36649668, y: -0.27810293, z: 0.11578447, w: -0.8803028}
-  m_LocalPosition: {x: -1.1108603, y: 2.689579, z: -1.9930824}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3455,7 +3455,7 @@ GameObject:
   - component: {fileID: 297203935}
   - component: {fileID: 297203934}
   m_Layer: 5
-  m_Name: soltarBloque_Boton
+  m_Name: SoltarBloque
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3519,8 +3519,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114934651631639806, guid: 3931ab039b5ff8044982f3c1c5d891a2,
-          type: 2}
+      - m_Target: {fileID: 983061413}
         m_MethodName: lanzarBloque
         m_Mode: 1
         m_Arguments:
@@ -3904,7 +3903,18 @@ MonoBehaviour:
   DuplicateStage: 0
   OnContentPlaced:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 746998460}
+        m_MethodName: setPlaneFinder
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: Vuforia.ContentPlacedEvent, Vuforia.UnityExtensions, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   mDisplayAdvanced: 1
@@ -3972,7 +3982,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: Vuforia.AnchorInputListenerBehaviour+InputReceivedEvent, Vuforia.UnityExtensions,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-  mDisplayAdvanced: 1
+  mDisplayAdvanced: 0
 --- !u!4 &365215081
 Transform:
   m_ObjectHideFlags: 0
@@ -6598,7 +6608,7 @@ GameObject:
   - component: {fileID: 677766111}
   - component: {fileID: 677766110}
   m_Layer: 5
-  m_Name: record_local
+  m_Name: Record
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6895,7 +6905,7 @@ GameObject:
   - component: {fileID: 722075932}
   - component: {fileID: 722075931}
   m_Layer: 5
-  m_Name: marcador_vidas
+  m_Name: Vidas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7185,7 +7195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &750924468
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8354,7 +8364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &852856312
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9020,6 +9030,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a52e919c4b3401c45a96086961c3803a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 746998460}
+  botonSoltarBloque: {fileID: 297203934}
+  partidaTerminada: {fileID: 1558606673}
+  vidasCanvas: {fileID: 722075929}
+  torre: {fileID: 556947995}
+  record: {fileID: 500869396}
 --- !u!1 &986295044
 GameObject:
   m_ObjectHideFlags: 0
@@ -11996,7 +12012,7 @@ GameObject:
   - component: {fileID: 1340225198}
   - component: {fileID: 1340225197}
   m_Layer: 0
-  m_Name: PlanoInvicible
+  m_Name: PlanoInvisible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12683,7 +12699,7 @@ GameObject:
   - component: {fileID: 1412831918}
   - component: {fileID: 1412831917}
   m_Layer: 5
-  m_Name: retornar_Boton
+  m_Name: Regresar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13869,12 +13885,12 @@ GameObject:
   - component: {fileID: 1558606676}
   - component: {fileID: 1558606675}
   m_Layer: 5
-  m_Name: partida_terminada
+  m_Name: Partida Terminada
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1558606674
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18188,11 +18204,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 746998460}
         m_MethodName: darComida
-        m_Mode: 1
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 10
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

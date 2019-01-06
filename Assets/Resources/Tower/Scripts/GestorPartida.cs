@@ -5,11 +5,16 @@ using UnityEngine.UI;
 
 public class GestorPartida : MonoBehaviour {
 
-    private GameManager gameManager;
+    public GameManager gameManager;
+    public Button botonSoltarBloque;
+    public GameObject partidaTerminada;
+    public GameObject vidasCanvas;
+    public Transform torre;
+    public Text record;
 
-    private GameObject alerta_helicopter_3D;
+    private GameObject notificacionHelicoptero;
     // Contador de bloques 3D
-    private SimpleHelvetica contador_bloques_3D;
+    private SimpleHelvetica contadorBloques3D;
 
     private int vidas;
     private Text vidas_text;
@@ -23,12 +28,12 @@ public class GestorPartida : MonoBehaviour {
     private Transform posicionLanzamiento;
 
     //Radio maximo de oscilacion del bloque
-    private float _radioMaximo;
+    private float radioMaximo;
     //Radio minimo de oscilacion del bloque
-    private float _separacion;
+    private float separacion;
 
     //Avisa que el bloque esta listo para ser lanzado (Escalar)
-    private bool _bloqueListo = false;
+    private bool bloqueListo = false;
 
     //Promedio posicion de la torre (punto medio)
     private float promX, promZ, alturaActual;
@@ -38,24 +43,29 @@ public class GestorPartida : MonoBehaviour {
 
 
 
+    private void OnEnable()
+    {
+        iniciarPartida();
+    }
 
     private void Awake()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        vidas_text = GameObject.Find("Canvas/Torre/marcador_vidas").GetComponent<Text>();
+
+        vidas_text = vidasCanvas.GetComponent<Text>();
         posicionLanzamiento =  GetComponent<Transform>();
 
         // Cargamos el cubo
         cuboPrefab = Resources.Load("Tower/Cube") as GameObject;
 
         //Instanciamos y configuramos el contador de bloques 3D.
-        contador_bloques_3D = GameObject.Find("Ground Plane Stage/Torre/marcador_bloques").GetComponent<SimpleHelvetica>();
+        contadorBloques3D = GameObject.Find("Ground Plane Stage/Torre/marcador_bloques").GetComponent<SimpleHelvetica>();
 
         // Configuramos la alerta_helicoptero
-        alerta_helicopter_3D = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero");
+        notificacionHelicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero");
 
         //Obtenemos el boton: "Soltar bloque" y le agregamos el metodo, solo de esta manera funciona
-        GameObject.Find("Canvas/Torre/soltarBloque_Boton").GetComponent<Button>().onClick.AddListener(this.lanzarBloque);
+        //GameObject.Find("Canvas/Torre/SoltarBloque").GetComponent<Button>().onClick.AddListener(this.lanzarBloque);
+        //botonSoltarBloque.onClick.AddListener(lanzarBloque);
 
     }
 
@@ -63,25 +73,28 @@ public class GestorPartida : MonoBehaviour {
     {
         vidas = 3;
         vidas_text.text = "Vidas x " + vidas.ToString();
-        transform.position = new Vector3(0, 0.3f, 0);
+        //transform.position = new Vector3(0, 0.3f, 0);
 
-        _radioMaximo = 0.2f;
-        _separacion = 0.075f;
+        radioMaximo = 0.2f;
+        separacion = 0.075f;
 
 
         //Se instancia el primer bloque y se inicia la partida.
-        nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
+        // TRANSFORM?
+        nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, torre);
 
-        GameObject.Find("Canvas/Torre/record_local/Text").GetComponent<Text>().text = PlayerPrefs.GetInt("valorLocal").ToString();
+        record.text = PlayerPrefs.GetInt("valorLocal").ToString();
 
         //reiniciamos la Alerta del helicoptero
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().Text = "Espere..";
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().GenerateText();
-        alerta_helicopter_3D.GetComponent<MeshRenderer>().material.color = Color.red;
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
+        notificacionHelicoptero.GetComponent<SimpleHelvetica>().Text = "Espere..";
+        notificacionHelicoptero.GetComponent<SimpleHelvetica>().GenerateText();
+        notificacionHelicoptero.GetComponent<MeshRenderer>().material.color = Color.red;
+        notificacionHelicoptero.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
         // Reiniciamos al contador de bloques
-        contador_bloques_3D.Text = "0";
-        contador_bloques_3D.GenerateText();
+        contadorBloques3D.Text = "0";
+        contadorBloques3D.GenerateText();
+
+        botonSoltarBloque.enabled = true;
 
     }
 
@@ -91,7 +104,7 @@ public class GestorPartida : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-        actualizarLanzamiento();
+       // actualizarLanzamiento();
 
     }
 
@@ -104,11 +117,13 @@ public class GestorPartida : MonoBehaviour {
         {
             foreach (GameObject bloque in arrayBloques)
             {
-                promX = +bloque.transform.position.x / arrayBloques.Count;
-                promZ = +bloque.transform.position.z / arrayBloques.Count;
+                promX += bloque.transform.position.x /arrayBloques.Count;
+                promZ += bloque.transform.position.z / arrayBloques.Count;
 
             }
-            alturaActual = arrayBloques.First.Value.transform.position.y + 0.1f + _separacion + _radioMaximo;
+
+
+            alturaActual = arrayBloques.First.Value.transform.position.y + 0.1f + separacion + radioMaximo;
             posicionLanzamiento.position = new Vector3(promX, alturaActual, promZ);
 
             promZ = promX = 0;
@@ -118,39 +133,41 @@ public class GestorPartida : MonoBehaviour {
 
     private void actualizarAlerta()
     {
-        if (_bloqueListo)
+        if (bloqueListo)
         {
-            alerta_helicopter_3D.GetComponent<SimpleHelvetica>().Text = "Listo!";
-            alerta_helicopter_3D.GetComponent<MeshRenderer>().material.color = Color.green;
+            notificacionHelicoptero.GetComponent<SimpleHelvetica>().Text = "Listo!";
+            notificacionHelicoptero.GetComponent<MeshRenderer>().material.color = Color.green;
         }
         else
         {
-            alerta_helicopter_3D.GetComponent<SimpleHelvetica>().Text = "Espere..";
-            alerta_helicopter_3D.GetComponent<MeshRenderer>().material.color = Color.red;
+            notificacionHelicoptero.GetComponent<SimpleHelvetica>().Text = "Espere..";
+            notificacionHelicoptero.GetComponent<MeshRenderer>().material.color = Color.red;
         }
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().GenerateText();
-        alerta_helicopter_3D.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
+        notificacionHelicoptero.GetComponent<SimpleHelvetica>().GenerateText();
+        notificacionHelicoptero.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
     }
 
 
     // Lanzar bloque a traves del boton.
     public void lanzarBloque()
     {
-        if (_bloqueListo)
+        if (bloqueListo)
         {
             Destroy(GameObject.Find("Ground Plane Stage/Torre/cuerda(Clone)"));
             //Se desactiva el update del bloque, y se llama a la funcion soltar
             nuevoBloque.GetComponent<nuevoBloque>().enabled = false;
             nuevoBloque.GetComponent<nuevoBloque>().soltarBloque();
 
-            _radioMaximo += 0.005f;
-            _separacion += 0.002f;
-            _bloqueListo = false;
+            radioMaximo += 0.005f;
+            separacion += 0.002f;
+            bloqueListo = false;
 
             //Creamos un nuevo bloque para lanzar
             nuevoBloque = Instantiate(cuboPrefab, posicionLanzamiento.position, Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
             actualizarAlerta();
         }
+
+        actualizarLanzamiento();
 
     }
     
@@ -161,7 +178,7 @@ public class GestorPartida : MonoBehaviour {
     // Metodos de encapsulamiento
     public void setListo()
     {
-        _bloqueListo = true;
+        bloqueListo = true;
         actualizarAlerta();
     }
 
@@ -172,7 +189,7 @@ public class GestorPartida : MonoBehaviour {
 
     public float getRadioMaximo()
     {
-        return _radioMaximo;
+        return radioMaximo;
     }
 
     public int getNumeroBloques()
@@ -190,24 +207,32 @@ public class GestorPartida : MonoBehaviour {
         if(vidas == 1) // Si perdemos todas las vidas
         {
             // desactivamos el boton 
-            GameObject.Find("Canvas/Torre/soltarBloque_Boton").SetActive(false);
-            GameObject.Find("Canvas/Torre/partida_terminada").SetActive(true);
-            Text texto = GameObject.Find("Canvas/Torre/partida_terminada/Text").GetComponent<Text>();
-            texto.text = "Haz perdido \n puntuacion maxima: \n " + arrayBloques.Count.ToString();
+            //TODO: Falta eliminar todo
+            botonSoltarBloque.enabled = false;
+            partidaTerminada.SetActive(true);
+            Text texto = partidaTerminada.GetComponentInChildren<Text>();
+            texto.text = "Haz perdido \n puntuacion maxima: \n "+ arrayBloques.Count.ToString();
+
             gameManager.terminada = true;
             gameManager.ultimoScore = arrayBloques.Count; // Agregamos el ultimo Score al local
-            return;
+
         }
-        vidas -= 1;
-        vidas_text.text = "Vidas x " + vidas.ToString();
+        else
+        {
+            vidas--;
+            vidas_text.text = "Vidas x " + vidas.ToString();
+        }
+      
     }
-    //Agrega el bloque lanzado a el arreglo, si es que se unio correctamente.
+    //Agrega el bloque lanzado a el arreglo, si es que se unió correctamente.
     public void agregarBloque(GameObject nuevoBloque)
     {
-        this.arrayBloques.AddFirst(nuevoBloque);
+        arrayBloques.AddFirst(nuevoBloque);
         // Actualizamos el contador 3D.
-        contador_bloques_3D.Text = arrayBloques.Count.ToString();
-        contador_bloques_3D.GenerateText();
+        contadorBloques3D.Text = arrayBloques.Count.ToString();
+        contadorBloques3D.GenerateText();
+
+
 
     }
 

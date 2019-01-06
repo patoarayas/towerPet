@@ -35,14 +35,14 @@ public class nuevoBloque : MonoBehaviour
         //Obtiene el radio maximo
         radioMaximo = gestorPartida.getRadioMaximo();
 
-        //SEtea el cubo para que no le agecte la greavedad no las colisiones
+        //Setea el cubo para que no le afecte la greavedad ni las colisiones
         GetComponent<Rigidbody>().isKinematic = true;
         GetComponent<Rigidbody>().useGravity = false;
 
         //Pone esta posicion en la variable pos
         pos.y = helicoptero.transform.position.y;
 
-        // SEtea la escala del bloque a 0
+        // Setea la escala del bloque a 0
         transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // el bloque parte con una escala de 0, es decir no existe
         GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
 
