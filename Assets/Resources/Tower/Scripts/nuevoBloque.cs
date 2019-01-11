@@ -26,6 +26,8 @@ public class nuevoBloque : MonoBehaviour
 
     private Transform helicoptero;
 
+    private bool noDestruir = false;
+
     void Start()
     {
         // Busca al Gestor Partida
@@ -109,10 +111,9 @@ public class nuevoBloque : MonoBehaviour
     }
 
 
-    // Metodos de 
     public void soltarBloque()
     {
-
+        noDestruir = true;
         GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<Rigidbody>().useGravity = true;
         StartCoroutine(iniciarComprobacion());
@@ -149,9 +150,14 @@ public class nuevoBloque : MonoBehaviour
 
     }
 
+    private void OnDisable()
+    {
+        if (!noDestruir)
+        {
+            Destroy(gameObject);
+        }
 
-
-
-
+        noDestruir = false;
+    }
 
 }

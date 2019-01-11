@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour {
         torreCanvas.SetActive(false);
         mascota.SetActive(true);
         mascotaCanvas.SetActive(true);
+        torre.SetActive(false);
 
         finPartida();
     }
@@ -141,10 +142,14 @@ public class GameManager : MonoBehaviour {
     //TODO: Revisar si esto es necesario
     private void finPartida()
     {
-        if (!terminada)
+        // TODO: Comprobar que este terminada podria ser innecesario,
+        // de todas maneras a volver a la mascota se deben ejecutar las mismas acciones,
+        // halla terminado la partida o no
+       /* if (!terminada)
         {
             return;
         }
+        */
 
         terminada = false;
 
@@ -163,6 +168,10 @@ public class GameManager : MonoBehaviour {
             if (PlayerPrefs.GetInt("valoLocal") < ultimoScore)
                 PlayerPrefs.SetInt("valorLocal",ultimoScore);
         }
+
+
+
+
             
     }
 

@@ -47,7 +47,15 @@ public class GestorPartida : MonoBehaviour {
     {
         iniciarPartida();
     }
-
+    private void OnDisable()
+    {
+        // eliminar cubos
+        for (int i = 0; i < arrayBloques.Count; i++)
+        {
+            Destroy(arrayBloques.First.Value);
+        }
+        arrayBloques.Clear();
+    }
     private void Awake()
     {
 
@@ -71,6 +79,7 @@ public class GestorPartida : MonoBehaviour {
 
     public void iniciarPartida()
     {
+        partidaTerminada.SetActive(false);
         vidas = 3;
         vidas_text.text = "Vidas x " + vidas.ToString();
         //transform.position = new Vector3(0, 0.3f, 0);
@@ -155,8 +164,9 @@ public class GestorPartida : MonoBehaviour {
         {
             Destroy(GameObject.Find("Ground Plane Stage/Torre/cuerda(Clone)"));
             //Se desactiva el update del bloque, y se llama a la funcion soltar
-            nuevoBloque.GetComponent<nuevoBloque>().enabled = false;
+
             nuevoBloque.GetComponent<nuevoBloque>().soltarBloque();
+            nuevoBloque.GetComponent<nuevoBloque>().enabled = false;
 
             radioMaximo += 0.005f;
             separacion += 0.002f;
@@ -215,6 +225,15 @@ public class GestorPartida : MonoBehaviour {
 
             gameManager.terminada = true;
             gameManager.ultimoScore = arrayBloques.Count; // Agregamos el ultimo Score al local
+
+
+            // eliminar cubos
+            for (int i = 0; i < arrayBloques.Count; i++)
+            {
+                Destroy(arrayBloques.First.Value);
+            }
+            arrayBloques.Clear();
+
 
         }
         else

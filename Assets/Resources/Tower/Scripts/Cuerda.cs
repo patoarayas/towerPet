@@ -21,4 +21,9 @@ public class Cuerda : MonoBehaviour {
         lineRenderer.SetPosition(0, origen.position);
         lineRenderer.SetPosition(1, destino.position);
     }
+
+    private void OnDisable()
+    {
+        Destroy(gameObject);
+    }
 }
