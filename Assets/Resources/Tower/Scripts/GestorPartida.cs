@@ -5,16 +5,21 @@ using UnityEngine.UI;
 
 public class GestorPartida : MonoBehaviour {
 
+    private AudioSource audioSrc;
+    public AudioClip sonidoBien;
+    public AudioClip sonidoMal;
+
     public GameManager gameManager;
     public Button botonSoltarBloque;
     public GameObject partidaTerminada;
     public GameObject vidasCanvas;
     public Transform torre;
     public Text record;
+    public Text contadorBloquesText;
 
     private GameObject notificacionHelicoptero;
     // Contador de bloques 3D
-    private SimpleHelvetica contadorBloques3D;
+    //private SimpleHelvetica contadorBloques3D;
 
     private int vidas;
     private Text vidas_text;
@@ -46,6 +51,7 @@ public class GestorPartida : MonoBehaviour {
     private void OnEnable()
     {
         iniciarPartida();
+
     }
     private void OnDisable()
     {
@@ -55,10 +61,14 @@ public class GestorPartida : MonoBehaviour {
             Destroy(arrayBloques.First.Value);
         }
         arrayBloques.Clear();
+
+
     }
     private void Awake()
     {
 
+
+        audioSrc = GetComponent<AudioSource>();
         vidas_text = vidasCanvas.GetComponent<Text>();
         posicionLanzamiento =  GetComponent<Transform>();
 
@@ -66,7 +76,7 @@ public class GestorPartida : MonoBehaviour {
         cuboPrefab = Resources.Load("Tower/Cube") as GameObject;
 
         //Instanciamos y configuramos el contador de bloques 3D.
-        contadorBloques3D = GameObject.Find("Ground Plane Stage/Torre/marcador_bloques").GetComponent<SimpleHelvetica>();
+       // contadorBloques3D = GameObject.Find("Ground Plane Stage/Torre/marcador_bloques").GetComponent<SimpleHelvetica>();
 
         // Configuramos la alerta_helicoptero
         notificacionHelicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero");
@@ -75,13 +85,14 @@ public class GestorPartida : MonoBehaviour {
         //GameObject.Find("Canvas/Torre/SoltarBloque").GetComponent<Button>().onClick.AddListener(this.lanzarBloque);
         //botonSoltarBloque.onClick.AddListener(lanzarBloque);
 
+
     }
 
     public void iniciarPartida()
     {
         partidaTerminada.SetActive(false);
         vidas = 3;
-        vidas_text.text = "Vidas x " + vidas.ToString();
+        vidas_text.text = vidas.ToString();
         //transform.position = new Vector3(0, 0.3f, 0);
 
         radioMaximo = 0.2f;
@@ -100,9 +111,12 @@ public class GestorPartida : MonoBehaviour {
         notificacionHelicoptero.GetComponent<MeshRenderer>().material.color = Color.red;
         notificacionHelicoptero.GetComponent<SimpleHelvetica>().ApplyMeshRenderer();
         // Reiniciamos al contador de bloques
-        contadorBloques3D.Text = "0";
-        contadorBloques3D.GenerateText();
 
+
+        //contadorBloques3D.Text = "0";
+        //contadorBloques3D.GenerateText();
+
+        contadorBloquesText.text = "0";
         botonSoltarBloque.enabled = true;
 
     }
@@ -214,14 +228,16 @@ public class GestorPartida : MonoBehaviour {
 
     public void restarVida()
     {
+
+        audioSrc.PlayOneShot(sonidoMal);
         if(vidas == 1) // Si perdemos todas las vidas
         {
-            // desactivamos el boton 
-            //TODO: Falta eliminar todo
+            vidas--;
+            vidas_text.text = vidas.ToString();
             botonSoltarBloque.enabled = false;
             partidaTerminada.SetActive(true);
             Text texto = partidaTerminada.GetComponentInChildren<Text>();
-            texto.text = "Haz perdido \n puntuacion maxima: \n "+ arrayBloques.Count.ToString();
+            texto.text = "Haz perdido \n Tu puntuación: \n "+ arrayBloques.Count.ToString();
 
             gameManager.terminada = true;
             gameManager.ultimoScore = arrayBloques.Count; // Agregamos el ultimo Score al local
@@ -239,17 +255,19 @@ public class GestorPartida : MonoBehaviour {
         else
         {
             vidas--;
-            vidas_text.text = "Vidas x " + vidas.ToString();
+            vidas_text.text = vidas.ToString();
         }
       
     }
     //Agrega el bloque lanzado a el arreglo, si es que se unió correctamente.
     public void agregarBloque(GameObject nuevoBloque)
     {
+        audioSrc.PlayOneShot(sonidoBien);
         arrayBloques.AddFirst(nuevoBloque);
         // Actualizamos el contador 3D.
-        contadorBloques3D.Text = arrayBloques.Count.ToString();
-        contadorBloques3D.GenerateText();
+        //contadorBloques3D.Text = arrayBloques.Count.ToString();
+        //contadorBloques3D.GenerateText();
+        contadorBloquesText.text = arrayBloques.Count.ToString();
 
 
 

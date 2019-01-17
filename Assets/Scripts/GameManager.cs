@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour {
 
     //Animador de la mascota, TODO: llevar este metodo a la mascota
     public Animator mascotaAnimator;
-
+    public ControladorMascota controlMascota;
     // Contador global de monedas
     public GameObject uIMonedas;
     public Text textoMonedas;
@@ -31,12 +31,14 @@ public class GameManager : MonoBehaviour {
 
     // TODO: Falta ver esto
     // Emisor de sonidos
-    public AudioSource emisor_audio;
+    private AudioSource audioSrc;
     // Audios del sonido mp3
-    public AudioClip sonido_comer;
-    public AudioClip sonido2;
-    public AudioClip sonido3;
-    public AudioClip sonido4;
+    public AudioClip sonidoComer;
+    public AudioClip sonidoMinijuego;
+    public AudioClip sonidoInicio;
+    public AudioClip sonidoBoton;
+    public AudioClip sonidoNo;
+    public AudioClip sonidoAparecer;
 
     //Permite acceder y controlar el canvas de la torre, notar que
     //la variable es el GameObject, y no es un Canvas
@@ -46,7 +48,8 @@ public class GameManager : MonoBehaviour {
 
     private void Awake()
     {
-        // Desactiva todo los elementos, dejando solo el menu principal
+        audioSrc = GetComponent<AudioSource>();
+        // Oculta los elementos del juego, dejando solo el menu principal
         torre.SetActive(false);
         torreCanvas.SetActive(false);
         mascota.SetActive(false);
@@ -56,8 +59,7 @@ public class GameManager : MonoBehaviour {
         menu.SetActive(true);
         
 
-        // TODO: ESto deberia ser su propio metodo,
-        // y deberia cargar tambien el recor de la torre
+
         // Carga la partida guardada, si no existe la crea
         if (!PlayerPrefs.HasKey("valorMonedas"))
         {
@@ -77,10 +79,15 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 
         // Muestra la cantidad de monedas en pantalla
-        textoMonedas.text = "Monedas: " + monedas;
+        textoMonedas.text = monedas.ToString();
         if(monedas == 0)
         {
             Color col = new Color(255, 0, 0);
+            textoMonedas.color = col;
+        }
+        else
+        {
+            Color col = new Color(0, 0, 0);
             textoMonedas.color = col;
         }
 
@@ -88,17 +95,22 @@ public class GameManager : MonoBehaviour {
 
     public void iniciarJuego()
     {
+        audioSrc.PlayOneShot(sonidoInicio);
         menu.SetActive(false);
         planeFinder.SetActive(true);
         mascota.SetActive(true);
         mascotaCanvas.SetActive(true);
         uIMonedas.SetActive(true);
 
+        controlMascota.realinear();
+
+
 
     }
 
     public void iniciarTorre()
     {
+        audioSrc.PlayOneShot(sonidoMinijuego);
         //Pausamos la mascota y su canvas(se esconden)
         mascota.SetActive(false);
         mascotaCanvas.SetActive(false);
@@ -114,7 +126,7 @@ public class GameManager : MonoBehaviour {
     {
         // Eliminamos la instancia "Torre".
         //GameObject.Find("Canvas/Torre/soltarBloque_Boton").SetActive(true);
-
+        audioSrc.PlayOneShot(sonidoBoton);
         // desactivamos y activamos los canvas
         torreCanvas.SetActive(false);
         mascota.SetActive(true);
@@ -122,18 +134,21 @@ public class GameManager : MonoBehaviour {
         torre.SetActive(false);
 
         finPartida();
+        controlMascota.realinear();
     }
 
     public void darComida(int precio)
     {
         if(monedas >= precio)
         {
+            audioSrc.PlayOneShot(sonidoComer);
             mascotaAnimator.SetTrigger("Comida");
             monedas -= precio;
             PlayerPrefs.SetInt("valorMonedas", monedas);
         }
         else
         {
+            audioSrc.PlayOneShot(sonidoNo);
             mascotaAnimator.SetTrigger("No");
             Debug.Log("Sin saldo para comida");
         }
@@ -178,6 +193,8 @@ public class GameManager : MonoBehaviour {
     public void setPlaneFinder(bool set)
     {
         planeFinder.SetActive(set);
+        audioSrc.PlayOneShot(sonidoAparecer);
+        controlMascota.realinear();
     }
 
 }

@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class ControladorMascota : MonoBehaviour {
 
-   
+    public Transform camara;
+    private Transform mascota;
+    bool flag = false;
 	// Use this for initialization
 	void Start () {
 
+        mascota = GetComponent<Transform>();
+        
+        
+
        
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    public void realinear()
+    {
+        mascota.LookAt(camara);
+    }
+
+
+
+
+
+
+
 }
