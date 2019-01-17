@@ -11,14 +11,19 @@ public class Helicoptero : MonoBehaviour {
     private Rigidbody helicopteroRigidBody;
 
     //Transform del GameObject gestorPartida
-    public Transform posicionLanzamiento;
-    
+    private Transform posicionLanzamiento;
+    // Tranform del alerta_helicoptero
+    private Transform alerta_helicoptero;
 
-    void Start () {
+    private AudioSource sonidoHelicoptero;
 
+    void Awake () {
+
+        sonidoHelicoptero = GetComponent<AudioSource>();
         helicopteroRigidBody = GetComponent<Rigidbody>();
-
-        //posicionLanzamiento = GameObject.Find("GestorPartida").GetComponent<GestorPartida>().getLanzamiento();
+        posicionLanzamiento = GameObject.Find("Ground Plane Stage/Torre/GestorPartida").transform;
+        alerta_helicoptero = GameObject.Find("Ground Plane Stage/Torre/alerta_helicoptero").transform;
+        transform.eulerAngles = new Vector3(0, 180, 0);
     }
 	
 	void Update () {
@@ -27,7 +32,17 @@ public class Helicoptero : MonoBehaviour {
         rotorTrasero.transform.Rotate(Vector3.right * Time.deltaTime * 600, Space.World);
 
         helicopteroRigidBody.velocity =  posicionLanzamiento.position - transform.position;
+        alerta_helicoptero.position = transform.position + new Vector3(-0.1f, 0.14f, 0);
 
+    }
+
+    private void OnEnable()
+    {
+        sonidoHelicoptero.Play();
+    }
+    private void OnDisable()
+    {
+        sonidoHelicoptero.Stop();
     }
 
 

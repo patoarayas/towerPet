@@ -9,6 +9,7 @@ public class nuevoBloque : MonoBehaviour
     private bool bloqueListo = false;
     private bool bloqueLanzado = false;
 
+    private GameObject cuerda;
     //Antigua variable "t"
     private float tiempo = 0.0f;
 
@@ -23,27 +24,32 @@ public class nuevoBloque : MonoBehaviour
 
     private Vector3 aux, pos = Vector3.zero;
 
-    private Transform heliCuerpo;
+    private Transform helicoptero;
+
+    private bool noDestruir = false;
 
     void Start()
     {
         // Busca al Gestor Partida
-        gestorPartida = GameObject.Find("GestorPartida").GetComponent<GestorPartida>();
-        //Obtiene el radio maximo 
+        gestorPartida = GameObject.Find("Ground Plane Stage/Torre/GestorPartida").GetComponent<GestorPartida>();
+        // Obtenemos la posicion del helicoptero
+        helicoptero = GameObject.Find("Ground Plane Stage/Torre/Helicoptero/Body").transform;
+        //Obtiene el radio maximo
         radioMaximo = gestorPartida.getRadioMaximo();
 
-        //SEtea el cubo para que no le agecte la greavedad no las colisiones
+        //Setea el cubo para que no le afecte la greavedad ni las colisiones
         GetComponent<Rigidbody>().isKinematic = true;
         GetComponent<Rigidbody>().useGravity = false;
 
-        //Obtiene la posicion del helicoptero
-        heliCuerpo = GameObject.Find("Helicoptero/Body").GetComponent<Transform>();
         //Pone esta posicion en la variable pos
-        pos.y = heliCuerpo.transform.position.y;
+        pos.y = helicoptero.transform.position.y;
 
-        // SEtea la escala del bloque a 0
+        // Setea la escala del bloque a 0
         transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // el bloque parte con una escala de 0, es decir no existe
-        //GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
+        GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
+
+        cuerda = Instantiate(Resources.Load("Prefabs/cuerda") as GameObject, new Vector3(0, 0, 0), Quaternion.identity, GameObject.Find("Ground Plane Stage/Torre").transform);
+        cuerda.GetComponent<Cuerda>().iniciarCuerda(GetComponent<Transform>(), helicoptero);
 
     }
 
@@ -52,8 +58,6 @@ public class nuevoBloque : MonoBehaviour
     {
 
         tiempo += Time.deltaTime * 0.5f;
-
-        Debug.DrawLine(heliCuerpo.position, transform.position, Color.white, 0.0001f);
 
         // Escala el bloque mientras no este listo
         if (!bloqueListo)
@@ -66,18 +70,16 @@ public class nuevoBloque : MonoBehaviour
 
 
         // Escalado del bloque al ser instanciado
-        if (transform.localScale.y >= 0.05f && !bloqueListo)
+        if (transform.localScale.y >= 0.025f && !bloqueListo)
         {
-            transform.localScale = new Vector3(0.2f, 0.05f, 0.2f);
+            transform.localScale = new Vector3(0.1f, 0.025f, 0.1f);
             gestorPartida.setListo();
             bloqueListo = true;
-
         }
 
 
         // Movimiento del bloque
 
-        //Debug.DrawLine(heliCuerpo.position, transform.position, Color.white, 0.0001f);
 
         // Posicion en forma de rosa  de 8 petalos R(theta) = a * cos(2Thetha)
         radioActual = radioMaximo * Mathf.Cos((5) * tiempo + 24);
@@ -89,7 +91,7 @@ public class nuevoBloque : MonoBehaviour
         //Debug.Log("pos Z: "+ posZ);
         pos.y = -posY - radioMaximo;
 
-        transform.position = pos + heliCuerpo.position;
+        transform.position = pos + helicoptero.position;
 
         anguloX = decremento * Mathf.Abs(Mathf.Atan(posX / posY) * Mathf.Rad2Deg);
         anguloZ = decremento * Mathf.Abs(Mathf.Atan(posZ / posY) * Mathf.Rad2Deg);
@@ -109,10 +111,9 @@ public class nuevoBloque : MonoBehaviour
     }
 
 
-    // Metodos de 
     public void soltarBloque()
     {
-
+        noDestruir = true;
         GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<Rigidbody>().useGravity = true;
         StartCoroutine(iniciarComprobacion());
@@ -121,58 +122,42 @@ public class nuevoBloque : MonoBehaviour
 
     private IEnumerator iniciarComprobacion()
     {
-        bloqueListo = false;
-
         yield return new WaitForSeconds(2f);
 
-
-        bool flag = true;
 
         if (gestorPartida.getNumeroBloques()  == 0)
         {
             GetComponent<Rigidbody>().isKinematic = true;
             gestorPartida.agregarBloque(gameObject);
-            flag = false;
-        }       
-
-        if(bloqueListo && flag)
-        {
-            gameObject.AddComponent<HingeJoint>();
-            GetComponent<HingeJoint>().connectedBody = gestorPartida.getUltimoBloque().GetComponent<Rigidbody>();
-            GetComponent<Rigidbody>().useGravity = false;
-            gestorPartida.agregarBloque(gameObject);
         }
-        else if(!bloqueListo && flag)
+        else
+        {
+            if (Vector3.Distance(transform.position, gestorPartida.getUltimoBloque().transform.position) >= 0.0559f)
+            {
+                gestorPartida.restarVida();
+                Destroy(gameObject);
+            }
+            else
+            {
+                gameObject.AddComponent<HingeJoint>();
+                GetComponent<HingeJoint>().connectedBody = gestorPartida.getUltimoBloque().GetComponent<Rigidbody>();
+                GetComponent<Rigidbody>().useGravity = false;
+                gestorPartida.agregarBloque(gameObject);
+            }
+        }
+
+
+
+    }
+
+    private void OnDisable()
+    {
+        if (!noDestruir)
         {
             Destroy(gameObject);
         }
 
-        gestorPartida.actualizarPosicionY();
-
+        noDestruir = false;
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(gestorPartida.getNumeroBloques() != 0)
-        {
-            if (GameObject.ReferenceEquals(collision.gameObject, gestorPartida.getUltimoBloque()))
-            {
-                bloqueListo = true;
-            }
-        }
-    }
-    private void OnCollisionExit(Collision collision)
-    {
-        if (gestorPartida.getNumeroBloques() != 0)
-        {
-            if (GameObject.ReferenceEquals(collision.gameObject, gestorPartida.getUltimoBloque()))
-            {
-                bloqueListo = false;
-            }
-        }
-    }
-
-
-
 
 }
